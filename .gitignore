@@ -1,6 +1,7 @@
 # プライバシー情報・一時的な指示（公開しない）
 local/
 CLAUDE.local.md
+tech-verify/
 
 # Claude Code の個人設定
 .claude/settings.local.json
