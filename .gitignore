@@ -1,0 +1,22 @@
+# プライバシー情報・一時的な指示（公開しない）
+local/
+CLAUDE.local.md
+
+# Claude Code の個人設定
+.claude/settings.local.json
+
+# 依存パッケージ・ビルド成果物
+node_modules/
+dist/
+build/
+*.log
+npm-debug.log*
+
+# 環境変数
+.env
+.env.*
+
+# OS・エディタ
+.DS_Store
+Thumbs.db
+.idea/
