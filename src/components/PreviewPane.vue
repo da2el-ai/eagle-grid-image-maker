@@ -389,6 +389,9 @@ defineExpose({
   inset: 0;
   width: 100%;
   height: 100%;
+  /* 画面全体の 'palt'（文字詰め）を Canvas の文字に効かせない
+     文字の幅を測る Canvas・書き出しの Canvas は画面に置かないので、詰めない。プレビューもそれに合わせる */
+  font-feature-settings: normal;
 }
 .empty {
   position: absolute;
