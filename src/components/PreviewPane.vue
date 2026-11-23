@@ -156,7 +156,8 @@ watch(
     if (!adjusted.value) fit();
   },
 );
-watch([page, vp, () => settings.bg, () => settings.textColor, () => settings.fit, () => settings.upscale, () => settings.orient, () => settings.rotDir, isEmpty, () => ui.state.trash, hoverIndex, drag], schedule);
+// 画像の並び（並べ替え・除外・再読み込みで新しい配列になる）が変わったときも描き直す
+watch([page, vp, () => state.items, () => settings.bg, () => settings.textColor, () => settings.fit, () => settings.upscale, () => settings.orient, () => settings.rotDir, isEmpty, () => ui.state.trash, hoverIndex, drag], schedule);
 
 // ---------------------------------------------------------------
 // マウスの操作
