@@ -16,6 +16,20 @@ import { createUiStore } from './state/ui-store';
 import { createView } from './state/view';
 import './style.css';
 
+// Eagle の API は plugin-create の後でないと使えない。来る前に呼ぶとエラーで止まる
+// 呼ばれ損ねないように、読み込んだらすぐに登録しておく
+const pluginReady = new Promise<void>((resolve) => {
+  const eagle = globalThis.eagle;
+  // Eagle の外（ブラウザでの確認など）では待たない
+  if (!eagle?.onPluginCreate) resolve();
+  else eagle.onPluginCreate(() => resolve());
+});
+
+// Eagle の言語。取れないときは、ページの URL に付いている locale= を使う
+function eagleLocale(): string | undefined {
+  return globalThis.eagle?.app.locale || new URLSearchParams(location.search).get('locale') || undefined;
+}
+
 async function boot(): Promise<void> {
   // 開発用のビルドだけ、外から操作するための受付を始める（配布用のビルドからは消える）
   if (import.meta.env.MODE === 'development') {
@@ -23,7 +37,8 @@ async function boot(): Promise<void> {
     await startRemote().catch((e) => console.error('[remote] 受付を開始できません', e));
   }
 
-  initI18n(globalThis.eagle?.app.locale);
+  await pluginReady;
+  initI18n(eagleLocale());
   const sharp = loadSharp();
   if (sharp.error) console.error('[sharp]', sharp.error);
 
