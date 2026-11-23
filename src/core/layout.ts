@@ -5,6 +5,9 @@ import { headerCount, headerIndex, pageRange, resolveShape, slotRowCol, type Gri
 import type { Settings } from './settings';
 import { LINE_HEIGHT, fontString, splitLines, wrapText, type Measure } from './text';
 
+// 行ヘッダーの最大幅（em）
+export const ROW_HEADER_MAX_EM = 50;
+
 export type TextKind = 'title' | 'xAxis' | 'yAxis' | 'colHeader' | 'rowHeader';
 
 export interface TextBox {
@@ -77,13 +80,14 @@ export function computeLayout(s: LayoutSettings, total: number, measure: Measure
   const colNeed = headerCount('col', shape);
   const rowNeed = headerCount('row', shape);
 
-  // 行ヘッダーの幅：clamp(セル幅, 全行で最も広いテキスト幅, 100em)
+  // 行ヘッダーの幅：clamp(セル幅, 全行で最も広いテキスト幅, 50em)
+  // 最大は 50em（2026-11-23 に 100em から変更）
   let rowHeaderW = 0;
   const rowLines: string[][] = [];
   if (s.xy) {
     let maxW = 0;
     for (let i = 0; i < rowNeed; i++) maxW = Math.max(maxW, measure(rowTexts[i] ?? '', hFont));
-    rowHeaderW = Math.ceil(Math.min(Math.max(s.cellW, maxW), 100 * hSize));
+    rowHeaderW = Math.ceil(Math.min(Math.max(s.cellW, maxW), ROW_HEADER_MAX_EM * hSize));
     for (let i = 0; i < rowNeed; i++) rowLines.push(wrapText(rowTexts[i] ?? '', rowHeaderW, hFont, measure));
   }
 

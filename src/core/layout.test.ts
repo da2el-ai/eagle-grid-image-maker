@@ -87,12 +87,12 @@ describe('computeLayout：XY プロット', () => {
     expect(rows[0]).toMatchObject({ alignH: 'right', alignV: 'middle', h: 80 });
   });
 
-  it('行ヘッダーの幅は 100em まで。超えたら折り返す', () => {
-    // 10px × 100 = 1000px。'x'×300 = 1500px
+  it('行ヘッダーの幅は 50em まで。超えたら折り返す', () => {
+    // 10px × 50 = 500px。'x'×300 = 1500px なので3行
     const L = computeLayout(xy({ rowHeaders: 'x'.repeat(300) }), 4, fakeMeasure);
     const r = L.page(0).texts.find((t) => t.kind === 'rowHeader');
-    expect(r?.w).toBe(1000);
-    expect(r?.lines).toHaveLength(2);
+    expect(r?.w).toBe(500);
+    expect(r?.lines).toHaveLength(3);
   });
 
   it('列ヘッダーは全列で共通の高さ（下揃え）。折り返した行の多い見出しに合わせる', () => {
