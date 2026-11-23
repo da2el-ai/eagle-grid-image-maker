@@ -37,7 +37,17 @@ const RUNTIME_PACKAGES = ['sharp', 'color', 'color-convert', 'color-name', 'colo
 // sharp の中で実行時に使うもの（C++ のソースやインストール用のスクリプトは入れない）
 const SHARP_FILES = ['package.json', 'LICENSE', 'lib', 'build/Release', 'vendor'];
 
+// node_modules の中身の目印（OS・CPU・sharp の版）
+const STAMP_FILE = '.egim-runtime';
+function runtimeStamp(): string {
+  return `${process.platform}-${process.arch}-sharp-${sharpVersion()}`;
+}
+
 function copyRuntimeModules(from: string, to: string): void {
+  // 中身が同じならコピーし直さない
+  // （Windows では Eagle がプラグインを開いている間、sharp の DLL が使用中で消せないため）
+  const stamp = path.join(to, STAMP_FILE);
+  if (fs.existsSync(stamp) && fs.readFileSync(stamp, 'utf8') === runtimeStamp()) return;
   fs.rmSync(to, { recursive: true, force: true });
   for (const name of RUNTIME_PACKAGES) {
     const src = path.join(from, name);
@@ -50,6 +60,15 @@ function copyRuntimeModules(from: string, to: string): void {
     } else {
       fs.cpSync(src, path.join(to, name), { recursive: true });
     }
+  }
+  fs.writeFileSync(stamp, runtimeStamp());
+}
+
+// dist/ を、node_modules を残して空にする
+function cleanOutDir(outDir: string): void {
+  if (!fs.existsSync(outDir)) return;
+  for (const name of fs.readdirSync(outDir)) {
+    if (name !== 'node_modules') fs.rmSync(path.join(outDir, name), { recursive: true, force: true });
   }
 }
 
@@ -67,6 +86,9 @@ export function pluginRuntime(opts: { dev: boolean }): Plugin {
     apply: 'build',
     configResolved(config) {
       outDir = path.resolve(config.root, config.build.outDir);
+    },
+    buildStart() {
+      cleanOutDir(outDir);
     },
     closeBundle() {
       // sharp を dist/node_modules にコピーする

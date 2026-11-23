@@ -9,7 +9,8 @@ export default defineConfig(({ mode }) => ({
   plugins: [vue(), pluginRuntime({ dev: mode === 'development' })],
   build: {
     outDir: 'dist',
-    emptyOutDir: true,
+    // dist/node_modules（sharp）を残すため、空にするのは plugin-runtime で行う
+    emptyOutDir: false,
     // Eagle 4.0 は Electron 22（Chromium 108）
     target: 'chrome108',
     // 開発用のビルドはデバッグしやすいように圧縮しない
