@@ -95,6 +95,35 @@
 - クリップボードへのコピー
 - 書き出した画像を Eagle に登録する機能
 
+
+## ソースからビルドする
+
+Node.js 18 以上が必要です（ビルドのときだけ使います。Eagle の中では Eagle の Node.js で動きます）。
+
+```bash
+npm ci
+npm run build:release
+```
+
+1. `release/` フォルダができます
+2. Eagle の「プラグイン」→「開発者オプション」→「ローカルプロジェクトをインポート」で、`release/` を読み込みます
+3. プラグインの一覧でこのプラグインを右クリックし、「Pack Plugin」を選ぶと `.eagleplugin` ができます
+
+画像処理に使う [sharp](https://sharp.pixelplumbing.com/) は、ビルドした OS 用のものが入ります。Windows 用は Windows でビルドしてください。
+
+### 開発
+
+| コマンド | 内容 |
+|---|---|
+| `npm run dev` | ファイルを変えるたびに、開発用のビルドを `dist/` に作り直す |
+| `npm run build:dev` | 開発用のビルドを `dist/` に作る |
+| `npm test` | 単体テスト（Vitest） |
+| `npm run typecheck` | 型チェック |
+
+- 開発用のビルドは、ID が `eagle-grid-image-maker-dev`、名前が「Eagle Grid Image Maker (dev)」になります。配布用と同時に Eagle に入れられます
+- 開発者ツールは F12 で開けます
+- 画面の文言は `public/locales/` の JSON ファイルにあります。ファイルを足すと、ほかの言語にも対応できます（Eagle の言語設定で選ばれます）
+
 ## 現在の状況
 
 - 本番のプラグインはまだ実装していない
