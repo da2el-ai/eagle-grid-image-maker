@@ -1,6 +1,6 @@
 {
   "name": "eagle-grid-image-maker",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "description": "Eagle で選んだ画像を格子状に並べて、1枚のグリッド画像として書き出すプラグイン",
   "type": "module",
@@ -11,6 +11,7 @@
     "dev": "vite build --mode development --watch",
     "build": "vite build",
     "build:dev": "vite build --mode development",
+    "build:release": "vite build --outDir release",
     "typecheck": "vue-tsc --noEmit",
     "test": "vitest run"
   },
@@ -25,5 +26,6 @@
     "vite": "6.4.6",
     "vitest": "3.2.7",
     "vue-tsc": "2.2.12"
-  }
+  },
+  "license": "MIT"
 }

@@ -96,8 +96,12 @@ export function pluginRuntime(opts: { dev: boolean }): Plugin {
 
       const manifestPath = path.join(outDir, 'manifest.json');
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      // 版は package.json に合わせる（書く場所を1つにする）
+      manifest.version = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8')).version;
       if (opts.dev) {
-        // 開発用：名前に (dev) を付ける。devTools は true にしない（開くたびに開発者ツールが開くため。F12 で開ける）
+        // 開発用：ID と名前を変えて、配布用と同時に Eagle に入れられるようにする
+        // devTools は true にしない（開くたびに開発者ツールが開くため。F12 で開ける）
+        manifest.id = `${manifest.id}-dev`;
         manifest.name = `${manifest.name} (dev)`;
       } else {
         // 配布用：ビルドした OS と CPU だけに入れられるようにする（OS ごとに .eagleplugin を作る）

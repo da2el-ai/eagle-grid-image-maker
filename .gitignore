@@ -9,6 +9,7 @@ tech-verify/
 # 依存パッケージ・ビルド成果物
 node_modules/
 dist/
+release/
 build/
 *.log
 npm-debug.log*
