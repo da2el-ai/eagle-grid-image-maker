@@ -1,9 +1,15 @@
 <script setup lang="ts">
-// 画面の骨組み（段階 0 の仮のもの）。左：カテゴリ／中央：設定／右：プレビュー
-import type { BootInfo } from './main';
+// 画面の骨組み（段階 2 の仮のもの）。左：カテゴリ／中央：設定／右：プレビュー
+import { computed } from 'vue';
+import { capacityOf } from './core/grid';
+import type { Settings } from './core/settings';
 import { t } from './i18n';
+import type { BootInfo } from './main';
+import type { GridStore } from './state/grid-store';
 
-defineProps<{ info: BootInfo }>();
+const props = defineProps<{ info: BootInfo; settings: Settings; grid: GridStore }>();
+const state = props.grid.state;
+const capacity = computed(() => capacityOf(props.settings));
 </script>
 
 <template>
@@ -17,6 +23,14 @@ defineProps<{ info: BootInfo }>();
           <p v-if="info.sharpVersion">{{ t('boot.sharpOk', { version: info.sharpVersion, ms: info.sharpMs }) }}</p>
           <p v-else class="error">{{ t('boot.sharpError', { message: info.sharpError ?? '' }) }}</p>
           <p>{{ t('boot.locale', { locale: info.locale, eagleLocale: info.eagleLocale ?? '-' }) }}</p>
+          <p class="status">{{ t('boot.status', { count: state.items.length, status: state.status }) }}</p>
+          <p v-if="state.skipped > 0" class="error">{{ t('boot.skipped', { count: state.skipped, capacity }) }}</p>
+          <template v-if="state.failures.length > 0">
+            <p class="error">{{ t('boot.failures', { count: state.failures.length }) }}</p>
+            <ul>
+              <li v-for="f in state.failures.slice(0, 10)" :key="f.id">{{ f.name }}：{{ t(`failure.${f.reason}`) }}</li>
+            </ul>
+          </template>
         </div>
       </main>
     </div>

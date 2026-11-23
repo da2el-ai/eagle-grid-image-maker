@@ -1,8 +1,11 @@
 // 起動処理
 import { createApp, reactive } from 'vue';
 import App from './App.vue';
+import { fetchSelection } from './eagle/adapter';
 import { initI18n } from './i18n';
 import { loadSharp } from './platform/sharp';
+import { createGridStore } from './state/grid-store';
+import { createSettingsStore } from './state/settings-store';
 import './style.css';
 
 export interface BootInfo {
@@ -12,7 +15,6 @@ export interface BootInfo {
   sharpVersion: string | null;
   sharpMs: number;
   sharpError: string | null;
-  moduleScript: boolean;
 }
 
 async function boot(): Promise<void> {
@@ -33,16 +35,19 @@ async function boot(): Promise<void> {
     sharpVersion: sharp.version,
     sharpMs: Math.round(sharp.ms),
     sharpError: sharp.error ? sharp.error.message : null,
-    // このファイルは <script type="module"> で読み込まれている
-    moduleScript: true,
   });
+
+  const settings = createSettingsStore();
+  const grid = createGridStore(settings, { fetchSelection });
 
   // 開発用のリモート受付から状態を見られるようにする
   if (import.meta.env.MODE === 'development') {
-    (window as unknown as { __egim: unknown }).__egim = { info };
+    (window as unknown as { __egim: unknown }).__egim = { info, settings, grid };
   }
 
-  createApp(App, { info }).mount('#app');
+  createApp(App, { info, settings, grid }).mount('#app');
+  // 起動したときに、Eagle で今選んでいる画像を読み込む
+  await grid.load();
 }
 
 boot().catch((e) => {

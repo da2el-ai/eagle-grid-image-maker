@@ -130,6 +130,17 @@ describe('mergeReload：再読み込み', () => {
     expect(ids(r.items)).toEqual(['c', 'a', 'e']);
   });
 
+  it('入力できる枚数を超えるときは、今ある画像を残し、新しい画像を選択順に入る分だけ足す', () => {
+    // 今もある画像は c と a の2枚。上限3なら、e だけ足す
+    const r = mergeReload(current, incoming, new Set(), 'name', 'asc', Math.random, 3);
+    expect(ids(r.items)).toEqual(['a', 'c', 'e']);
+    expect([r.added, r.skipped]).toEqual([1, 1]);
+    // 今ある画像だけで上限を超えていても、消さない
+    const full = mergeReload(current, incoming, new Set(), 'manual', 'asc', Math.random, 1);
+    expect(ids(full.items)).toEqual(['c', 'a']);
+    expect([full.added, full.skipped]).toEqual([0, 2]);
+  });
+
   it('今もある画像は、新しい中身に置き換える', () => {
     const r = mergeReload(current, incoming, new Set(), 'manual', 'asc');
     expect(r.items.find((x) => x.id === 'a')?.selectionIndex).toBe(1);

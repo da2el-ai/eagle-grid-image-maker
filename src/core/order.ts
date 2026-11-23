@@ -68,12 +68,14 @@ export interface ReloadResult<T> {
   kept: number;
   added: number;
   removed: number;
+  skipped: number; // 入力できる枚数を超えたので、足さなかった枚数
 }
 
 // 再読み込み（01 の 2.2）
 // - current：今の並び
 // - incoming：Eagle で今選んでいる画像（選択順。selectionIndex は新しい値）
 // - excluded：グリッドから除外した ID（再追加しない）
+// - capacity：入力できる枚数。今ある画像は残し、新しい画像だけを選択順に入る分まで足す
 // 今もある画像は今の並びを保ち、中身（selectionIndex など）は新しいものにする
 export function mergeReload<T extends Orderable>(
   current: readonly T[],
@@ -82,11 +84,15 @@ export function mergeReload<T extends Orderable>(
   key: SortKey,
   dir: SortDir,
   random: Random = Math.random,
+  capacity = Number.POSITIVE_INFINITY,
 ): ReloadResult<T> {
   const byId = new Map(incoming.map((it) => [it.id, it]));
   const currentIds = new Set(current.map((it) => it.id));
   const kept = current.filter((it) => byId.has(it.id)).map((it) => byId.get(it.id) as T);
-  const added = incoming.filter((it) => !currentIds.has(it.id) && !excluded.has(it.id));
+  const candidates = incoming.filter((it) => !currentIds.has(it.id) && !excluded.has(it.id));
+  const room = Math.max(0, capacity - kept.length);
+  const added = candidates.slice(0, room);
+  const skipped = candidates.length - added.length;
   const removed = current.length - kept.length;
 
   let items: T[];
@@ -101,5 +107,5 @@ export function mergeReload<T extends Orderable>(
     // そのほか：今の並び順に従う
     items = sortItems([...kept, ...added], key, dir);
   }
-  return { items, kept: kept.length, added: added.length, removed };
+  return { items, kept: kept.length, added: added.length, removed, skipped };
 }

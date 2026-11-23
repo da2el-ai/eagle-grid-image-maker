@@ -3,5 +3,11 @@
   "boot.loading": "Loading…",
   "boot.sharpOk": "sharp {version} loaded ({ms} ms)",
   "boot.sharpError": "Could not load sharp: {message}",
-  "boot.locale": "Language: {locale} (Eagle: {eagleLocale})"
+  "boot.locale": "Language: {locale} (Eagle: {eagleLocale})",
+  "boot.status": "{count} images ({status})",
+  "boot.failures": "Could not load {count} image(s)",
+  "boot.skipped": "{count} image(s) were not imported (limit {capacity})",
+  "failure.unsupported": "unsupported format",
+  "failure.missing": "file not found",
+  "failure.broken": "broken image"
 }
