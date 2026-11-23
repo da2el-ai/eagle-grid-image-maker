@@ -112,5 +112,7 @@
   "failure.broken": "Broken image",
   "dialog.excludeTitle": "Remove this image from the grid?",
   "dialog.excludeBody": "It is only removed from the list, not from your Eagle library.",
-  "dialog.excludeOk": "Remove"
+  "dialog.excludeOk": "Remove",
+  "preview.broken": "Cannot load",
+  "preview.reordering": "Reordering — release to switch to manual order"
 }

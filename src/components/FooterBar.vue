@@ -16,10 +16,10 @@ const pageLabel = computed(() => (hasItems.value ? t('footer.page', { n: ui.stat
   <footer class="footer">
     <div class="info">
       <div class="pager">
-        <button type="button" class="nav" :aria-label="t('footer.prev')" :disabled="ui.state.page <= 0" @click="ui.state.page--">
+        <button type="button" class="nav" data-page-nav="prev" :aria-label="t('footer.prev')" :disabled="ui.state.page <= 0" @click="ui.state.page--">
           <AppIcon name="prev" :size="16" :stroke-width="1.6" />
         </button>
-        <button type="button" class="nav" :aria-label="t('footer.next')" :disabled="ui.state.page >= view.pageCount.value - 1" @click="ui.state.page++">
+        <button type="button" class="nav" data-page-nav="next" :aria-label="t('footer.next')" :disabled="ui.state.page >= view.pageCount.value - 1" @click="ui.state.page++">
           <AppIcon name="next" :size="16" :stroke-width="1.6" />
         </button>
       </div>

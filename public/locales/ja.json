@@ -112,5 +112,7 @@
   "failure.broken": "壊れた画像",
   "dialog.excludeTitle": "この画像をグリッドから外しますか？",
   "dialog.excludeBody": "リストから外すだけで、Eagle のライブラリからは削除されません。",
-  "dialog.excludeOk": "外す"
+  "dialog.excludeOk": "外す",
+  "preview.broken": "読み込めません",
+  "preview.reordering": "並べ替え中 — 離すと並び順が「手動順」になります"
 }

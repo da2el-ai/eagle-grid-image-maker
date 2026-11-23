@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // 画面全体：左＝カテゴリ／中央＝設定／右＝プレビュー（01 の 9 章）
-import { provide, ref } from 'vue';
+import { onMounted, provide, ref } from 'vue';
 import { APP_KEY, type AppContext } from './app-context';
 import CategoryRail from './components/CategoryRail.vue';
 import FooterBar from './components/FooterBar.vue';
@@ -15,6 +15,14 @@ provide(APP_KEY, props.ctx);
 
 const ui = props.ctx.ui;
 const preview = ref<InstanceType<typeof PreviewPane> | null>(null);
+
+// 開発用のリモート受付からプレビューを見られるようにする
+if (import.meta.env.MODE === 'development') {
+  onMounted(() => {
+    const w = window as unknown as { __egim?: Record<string, unknown> };
+    if (w.__egim) w.__egim.preview = preview;
+  });
+}
 </script>
 
 <template>

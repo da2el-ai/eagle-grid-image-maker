@@ -46,6 +46,9 @@ export interface GridLayout {
   shape: GridShape;
   width: number;
   height: number;
+  cellW: number;
+  cellH: number;
+  gap: number;
   gridX: number;
   gridY: number;
   gridW: number;
@@ -162,5 +165,5 @@ export function computeLayout(s: LayoutSettings, total: number, measure: Measure
     return { pageIndex, width, height, cells, texts };
   };
 
-  return { shape, width, height, gridX, gridY, gridW, gridH, page };
+  return { shape, width, height, cellW: s.cellW, cellH: s.cellH, gap, gridX, gridY, gridW, gridH, page };
 }

@@ -27,11 +27,12 @@ export interface UiState {
   tab: Tab;
   page: number; // 0 始まり
   trash: boolean; // 削除モード
+  reordering: boolean; // 挿入移動のドラッグ中
   dialog: OpenDialog | null;
 }
 
 export function createUiStore() {
-  const state = reactive<UiState>({ tab: 'grid', page: 0, trash: false, dialog: null });
+  const state = reactive<UiState>({ tab: 'grid', page: 0, trash: false, reordering: false, dialog: null });
 
   // ダイアログを出して、押されたボタンの id を返す
   function ask(req: DialogRequest): Promise<string> {

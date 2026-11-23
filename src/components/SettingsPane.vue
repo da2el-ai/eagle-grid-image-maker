@@ -26,7 +26,7 @@ const { ui } = useApp();
 
 <style scoped>
 .pane {
-  width: 320px;
+  width: 344px;
   flex: none;
   display: flex;
   flex-direction: column;
