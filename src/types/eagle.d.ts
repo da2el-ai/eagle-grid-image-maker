@@ -38,6 +38,9 @@ export interface EagleApi {
     getSelected(): Promise<EagleItem[]>;
     select(ids: string[]): Promise<boolean>;
   };
+  window?: {
+    hide(): Promise<void>;
+  };
   onPluginCreate(callback: (plugin: { path: string; manifest: unknown }) => void): void;
 }
 

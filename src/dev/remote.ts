@@ -84,6 +84,59 @@ const helpers = {
     b.click();
     return b.textContent;
   },
+  // 画面全体を PNG で保存する（開発での確認用）
+  // HTML と CSS を SVG の foreignObject に包んで Canvas に描く。canvas 要素は中身の画像に置き換える
+  async snapDom(outPath: string, scale = 1) {
+    const root = document.documentElement;
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    const clone = root.cloneNode(true) as HTMLElement;
+    const src = [...root.querySelectorAll('canvas')];
+    clone.querySelectorAll('canvas').forEach((c, i) => {
+      const img = document.createElement('img');
+      img.src = src[i].toDataURL('image/png');
+      img.setAttribute('style', getComputedStyle(src[i]).cssText);
+      img.style.width = `${src[i].clientWidth}px`;
+      img.style.height = `${src[i].clientHeight}px`;
+      c.replaceWith(img);
+    });
+    // 入力欄の今の値を写す
+    const srcInputs = [...root.querySelectorAll('input, textarea, select')] as (HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement)[];
+    clone.querySelectorAll('input, textarea, select').forEach((el, i) => {
+      const s = srcInputs[i];
+      if (s instanceof HTMLInputElement) {
+        if (s.type === 'checkbox' || s.type === 'radio') (el as HTMLInputElement).toggleAttribute('checked', s.checked);
+        else el.setAttribute('value', s.value);
+      } else if (s instanceof HTMLTextAreaElement) el.textContent = s.value;
+      else if (s instanceof HTMLSelectElement) (el as HTMLSelectElement).querySelectorAll('option').forEach((o, k) => o.toggleAttribute('selected', k === s.selectedIndex));
+    });
+    clone.querySelectorAll('script').forEach((s) => s.remove());
+    const css = [...document.styleSheets].map((ss) => {
+      try {
+        return [...ss.cssRules].map((r) => r.cssText).join('\n');
+      } catch {
+        return '';
+      }
+    }).join('\n');
+    const style = document.createElement('style');
+    style.textContent = css;
+    clone.querySelector('head')?.appendChild(style);
+    clone.querySelectorAll('link[rel="stylesheet"]').forEach((l) => l.remove());
+    const xhtml = new XMLSerializer().serializeToString(clone);
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><foreignObject width="100%" height="100%">${xhtml}</foreignObject></svg>`;
+    const img = new Image();
+    img.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+    await img.decode();
+    const c = document.createElement('canvas');
+    c.width = w * scale;
+    c.height = h * scale;
+    const ctx = c.getContext('2d') as CanvasRenderingContext2D;
+    ctx.scale(scale, scale);
+    ctx.drawImage(img, 0, 0);
+    const b64 = c.toDataURL('image/png').split(',')[1];
+    nodeFs().writeFileSync(outPath, Buffer.from(b64, 'base64'));
+    return { path: outPath, width: c.width, height: c.height };
+  },
   // canvas を PNG で保存する
   snapCanvas(selector: string, outPath: string, index = 0) {
     const c = document.querySelectorAll<HTMLCanvasElement>(selector)[index];

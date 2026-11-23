@@ -1,12 +1,18 @@
-/* 全体の色と文字（暗い配色。モックアップに合わせて段階 3 で整える） */
+/* 全体の色と文字（モックアップの暗い配色） */
 :root {
-  --bg: #1f2126;
-  --bg-panel: #26282e;
-  --border: #383b42;
-  --text: #e6e7ea;
-  --text-muted: #9a9ea8;
-  --accent: #3b82f6;
-  --danger: #f87171;
+  --bg: #1f2024;
+  --bg-panel: #26272c;
+  --bg-input: #34353c;
+  --bg-input-active: #4a4b54;
+  --border: #2a2b30;
+  --border-strong: #3a3b42;
+  --text: #e6e7eb;
+  --text-muted: #a9abb3;
+  --accent: #4a8bff;
+  --danger: #e5715b;
+  --warn: #e2b04a;
+  --font: 'Hiragino Sans', 'Yu Gothic UI', 'Meiryo', system-ui, -apple-system, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
   color-scheme: dark;
 }
 
@@ -15,11 +21,110 @@
 }
 
 html,
-body {
+body,
+#app {
   margin: 0;
   height: 100%;
+  overflow: hidden;
   background: var(--bg);
   color: var(--text);
-  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
-  font-size: 13px;
+  font-family: var(--font);
+  font-size: 12.5px;
+  line-height: 1.45;
+  font-feature-settings: 'palt';
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+button:disabled {
+  cursor: default;
+  opacity: 0.35;
+}
+
+/* 入力欄の共通の見た目 */
+.input {
+  height: 26px;
+  background: var(--bg-input);
+  border: none;
+  border-radius: 5px;
+  color: var(--text);
+  padding: 0 8px;
+  font: inherit;
+  outline: none;
+}
+
+.input:focus-visible {
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.input.num {
+  width: 72px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.hint {
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.btn {
+  height: 28px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 5px;
+  background: var(--bg-input);
+  color: var(--text);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn.primary {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+}
+
+.btn.danger {
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.icon-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 5px;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.icon-btn:hover:not(:disabled) {
+  background: var(--bg-input);
+  color: var(--text);
+}
+
+/* 設定欄 */
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.panel .sep {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 0;
+}
+
+.panel .indent {
+  padding-left: 116px;
 }
