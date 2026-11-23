@@ -71,16 +71,16 @@ describe('computeLayout：XY プロット', () => {
   const xy = (over: Partial<Settings> = {}) =>
     base({ xy: true, headerSize: 10, colHeaders: 'A\nB\nC\nD', rowHeaders: 'r1\nr2', ...over });
 
-  it('行ヘッダーの幅は最低でもセル幅。列ヘッダーの高さは 1em 以上', () => {
+  it('行ヘッダーの幅は一番長い見出しの幅（セル幅より狭くてもよい）。列ヘッダーの高さは 1em 以上', () => {
     const L = computeLayout(xy(), 8, fakeMeasure);
-    // 行ヘッダー 100 + 間隔 10
-    expect(L.gridX).toBe(20 + 100 + 10);
+    // 行ヘッダー 'r1' = 10px + 間隔 10
+    expect(L.gridX).toBe(20 + 10 + 10);
     // 列ヘッダー：1行 = 12px（1.2em）+ 間隔 10
     expect(L.gridY).toBe(20 + 12 + 10);
   });
 
   it('行ヘッダーは全行で共通の幅（右寄せ）。長い見出しに合わせる', () => {
-    // 'x'×30 = 150px > セル幅 100
+    // 'x'×30 = 150px
     const L = computeLayout(xy({ rowHeaders: `r1\n${'x'.repeat(30)}` }), 8, fakeMeasure);
     const rows = L.page(0).texts.filter((t) => t.kind === 'rowHeader');
     expect(rows.map((t) => t.w)).toEqual([150, 150]);
@@ -137,6 +137,12 @@ describe('computeLayout：XY プロット', () => {
     const p2 = L.page(1).texts;
     expect(p2.filter((t) => t.kind === 'colHeader').map((t) => t.lines[0])).toEqual(['C', 'D']);
     expect(p2.filter((t) => t.kind === 'rowHeader').map((t) => t.lines[0])).toEqual(['r1', 'r2']);
+  });
+
+  it('行ヘッダーがすべて空なら幅は 0（間隔だけ空く）', () => {
+    const L = computeLayout(xy({ rowHeaders: '' }), 8, fakeMeasure);
+    expect(L.gridX).toBe(20 + 0 + 10);
+    expect(L.page(0).texts.find((t) => t.kind === 'rowHeader')?.w).toBe(0);
   });
 
   it('見出しが足りない行・列は空にする', () => {
