@@ -9,14 +9,15 @@ const props = withDefaults(
 );
 const emit = defineEmits<{ 'update:modelValue': [value: number | null] }>();
 
-const text = ref(props.modelValue == null ? '' : String(props.modelValue));
+// type="number" の欄に v-model を使うと、Vue が値を数に直す（空欄なら ''）。文字と数の両方を受ける
+const text = ref<string | number>(props.modelValue == null ? '' : String(props.modelValue));
 watch(
   () => props.modelValue,
   (v) => (text.value = v == null ? '' : String(v)),
 );
 
 function commit(): void {
-  const raw = text.value.trim();
+  const raw = String(text.value ?? '').trim();
   if (raw === '') {
     if (props.optional) emit('update:modelValue', null);
     else text.value = props.modelValue == null ? '' : String(props.modelValue);
