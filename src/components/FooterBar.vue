@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // 右下：情報とメイン操作。並びは決まっていて変えない（01 の 9 章）
-// [◀][▶] Page n / N | 枚数 | 並び順 |   [グリッドをクリア] [キャンセル] [グリッド保存]
+// [◀][▶] Page n / N | 枚数 | 並び順 | 出力解像度 | 推定メモリ |   [グリッドをクリア] [キャンセル] [グリッド保存]
+// 出力解像度と推定メモリは、書き出しの設定欄と同じ値（見出しは付けない）
 import { computed } from 'vue';
 import { useApp } from '../app-context';
 import { t } from '../i18n';
@@ -10,6 +11,13 @@ import AppIcon from './ui/AppIcon.vue';
 const { ui, view, settings, actions } = useApp();
 const hasItems = computed(() => view.total.value > 0);
 const pageLabel = computed(() => (hasItems.value ? t('footer.page', { n: ui.state.page + 1, total: view.pageCount.value }) : t('footer.pageNone')));
+const resolution = computed(() =>
+  hasItems.value ? t('export.resolutionValue', { w: fmtNumber(view.layout.value.width), h: fmtNumber(view.layout.value.height) }) : '–',
+);
+const memory = computed(() => (hasItems.value ? t('export.memoryValue', { mb: fmtNumber(view.memoryMB.value) }) : '–'));
+// 形式の上限を超えたら解像度を赤、「重い」ときは推定メモリを黄色にする
+const overLimit = computed(() => view.issues.value.some((i) => i.code === 'formatLimit'));
+const heavy = computed(() => view.issues.value.some((i) => i.code === 'heavy'));
 </script>
 
 <template>
@@ -28,6 +36,10 @@ const pageLabel = computed(() => (hasItems.value ? t('footer.page', { n: ui.stat
       <span>{{ t('footer.count', { n: fmtNumber(view.total.value) }) }}</span>
       <div class="divider" aria-hidden="true" />
       <span class="muted">{{ t(`sort.${settings.sortKey}`) }}</span>
+      <div class="divider" aria-hidden="true" />
+      <span class="mono" :class="{ error: overLimit }">{{ resolution }}</span>
+      <div class="divider" aria-hidden="true" />
+      <span class="mono muted clip" :class="{ warn: heavy }">{{ memory }}</span>
     </div>
     <div class="actions">
       <button type="button" class="btn danger" :disabled="!hasItems || view.exporting.value" @click="actions.askClear">{{ t('footer.clear') }}</button>
@@ -54,6 +66,24 @@ const pageLabel = computed(() => (hasItems.value ? t('footer.page', { n: ui.stat
   align-items: center;
   gap: 10px;
   white-space: nowrap;
+  overflow: hidden;
+  margin-right: 12px;
+}
+.info > * {
+  flex: none;
+}
+/* 狭いときは、末尾の推定メモリを「…」で切る */
+.info > .clip {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.error {
+  color: var(--danger);
+}
+.warn {
+  color: var(--warn);
 }
 .pager {
   display: flex;
