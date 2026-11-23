@@ -19,7 +19,7 @@ defineProps<{ label: string; for?: string }>();
   min-height: 26px;
 }
 .label {
-  width: 128px;
+  width: 104px;
   flex: none;
   color: var(--text-muted);
 }

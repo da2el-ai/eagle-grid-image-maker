@@ -61,16 +61,38 @@ export function drawImageCell(ctx: CanvasRenderingContext2D, cell: CellBox, plac
 }
 
 // 読み込み中・読めなかったセル
+// 読めなかったセルには、壊れた画像のアイコン（画像の枠に斜線）と文字を出す（モックアップと同じ）
 export function drawCellState(ctx: CanvasRenderingContext2D, cell: CellBox, state: 'loading' | 'broken', label: string): void {
   ctx.save();
   ctx.fillStyle = state === 'broken' ? '#fbe9e5' : '#e9e9ec';
   ctx.fillRect(cell.x, cell.y, cell.w, cell.h);
   if (state === 'broken') {
-    ctx.fillStyle = '#a3361f';
-    ctx.font = `${Math.max(10, Math.round(Math.min(cell.w, cell.h) / 14))}px sans-serif`;
+    const color = '#a3361f';
+    const fontSize = Math.max(10, Math.round(Math.min(cell.w, cell.h) / 14));
+    const icon = fontSize * 2; // アイコンの大きさ（24 の枠で描いたものを拡大する）
+    const gapY = fontSize * 0.5;
+    const blockH = icon + gapY + fontSize;
+    const top = cell.y + (cell.h - blockH) / 2;
+    // アイコン
+    ctx.save();
+    ctx.translate(cell.x + cell.w / 2 - icon / 2, top);
+    ctx.scale(icon / 24, icon / 24);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.5;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    ctx.roundRect(3.5, 5, 17, 14, 2);
+    ctx.moveTo(4, 4);
+    ctx.lineTo(20, 20);
+    ctx.stroke();
+    ctx.restore();
+    // 文字
+    ctx.fillStyle = color;
+    ctx.font = `${fontSize}px sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(label, cell.x + cell.w / 2, cell.y + cell.h / 2, cell.w * 0.9);
+    ctx.fillText(label, cell.x + cell.w / 2, top + icon + gapY + fontSize / 2, cell.w * 0.9);
   }
   ctx.restore();
 }

@@ -20,7 +20,7 @@
   "grid.cellH": "セル高さ",
   "unit.px": "px",
   "image.fit": "表示方式",
-  "image.upscale": "小さい画像を拡大する",
+  "image.upscale": "小さい画像を拡大",
   "image.orient": "向きを揃える",
   "image.orientNone": "回転しない",
   "image.orientPortrait": "縦向きに揃える",
