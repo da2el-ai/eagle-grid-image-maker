@@ -1,6 +1,6 @@
 // ビルドのあとに、プラグインとして動かすのに要るものを dist/ に入れる Vite のプラグイン
 // - sharp（バンドルせず、実行時に require で読み込む）。実行時に使うパッケージ・ファイルだけを入れる
-// - manifest.json の書き換え（配布用：ビルドした OS の platform と arch、開発用：開発者ツールを開ける）
+// - manifest.json の書き換え（配布用：ビルドした OS の platform と arch、開発用：名前に (dev)）
 import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -75,8 +75,7 @@ export function pluginRuntime(opts: { dev: boolean }): Plugin {
       const manifestPath = path.join(outDir, 'manifest.json');
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       if (opts.dev) {
-        // 開発用：開発者ツールを開けるようにする
-        manifest.devTools = true;
+        // 開発用：名前に (dev) を付ける。devTools は true にしない（開くたびに開発者ツールが開くため。F12 で開ける）
         manifest.name = `${manifest.name} (dev)`;
       } else {
         // 配布用：ビルドした OS と CPU だけに入れられるようにする（OS ごとに .eagleplugin を作る）
