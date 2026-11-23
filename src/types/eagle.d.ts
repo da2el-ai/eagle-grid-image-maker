@@ -30,6 +30,16 @@ export interface EagleApi {
     arch: string;
     isWindows: boolean;
     isMac: boolean;
+    getPath(name: string): Promise<string> | string;
+  };
+  dialog: {
+    showSaveDialog(options: {
+      title?: string;
+      defaultPath?: string;
+      buttonLabel?: string;
+      filters?: { name: string; extensions: string[] }[];
+      properties?: string[];
+    }): Promise<{ canceled: boolean; filePath?: string }>;
   };
   library: {
     info(): Promise<EagleLibraryInfo>;

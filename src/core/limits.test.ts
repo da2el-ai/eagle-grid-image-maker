@@ -28,8 +28,9 @@ describe('checkOutput', () => {
     expect(canSave(issues)).toBe(false);
   });
 
-  it('JPEG は 65535 px まで', () => {
-    expect(checkOutput({ ...ok, width: 65536, height: 10 })[0]?.code).toBe('formatLimit');
+  it('JPEG は 65500 px まで', () => {
+    expect(checkOutput({ ...ok, width: 65500, height: 10 }).map((i) => i.code)).not.toContain('formatLimit');
+    expect(checkOutput({ ...ok, width: 65501, height: 10 })[0]?.code).toBe('formatLimit');
   });
 
   it('PNG は寸法の上限なし。大きければ「重い」警告だけで、保存はできる', () => {

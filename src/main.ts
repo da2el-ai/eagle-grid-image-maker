@@ -8,7 +8,9 @@ import { listLocalFonts } from './platform/fonts';
 import { canvasMeasure } from './platform/measure';
 import { loadSharp } from './platform/sharp';
 import { createActions } from './state/actions';
+import { createExportStore } from './state/export-store';
 import { createGridStore } from './state/grid-store';
+import { createSaveAction } from './state/save-action';
 import { createSettingsStore } from './state/settings-store';
 import { createUiStore } from './state/ui-store';
 import { createView } from './state/view';
@@ -28,10 +30,11 @@ async function boot(): Promise<void> {
   const settings = createSettingsStore();
   const grid = createGridStore(settings, { fetchSelection });
   const ui = createUiStore();
-  const view = createView(settings, grid, ui, canvasMeasure);
-  const actions = createActions(grid, ui);
+  const exp = createExportStore();
+  const view = createView(settings, grid, ui, canvasMeasure, exp);
+  const actions = createActions(grid, ui, exp, createSaveAction(settings, grid, ui, exp));
   const fonts = ref<string[] | null | 'loading'>('loading');
-  const ctx: AppContext = { settings, grid, ui, view, actions, fonts };
+  const ctx: AppContext = { settings, grid, ui, view, actions, exp, fonts };
 
   // 開発用のリモート受付から状態を見られるようにする
   if (import.meta.env.MODE === 'development') {

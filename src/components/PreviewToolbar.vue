@@ -6,13 +6,13 @@ import { t } from '../i18n';
 import AppIcon from './ui/AppIcon.vue';
 
 defineEmits<{ fit: []; zoomOut: []; zoomIn: [] }>();
-const { ui, actions, grid } = useApp();
+const { ui, actions, grid, view } = useApp();
 </script>
 
 <template>
   <div class="toolbar">
     <div class="trash-hint">{{ ui.state.trash ? t('toolbar.trashHint') : '' }}</div>
-    <button type="button" class="icon-btn" :title="t('toolbar.reload')" :aria-label="t('toolbar.reloadLabel')" :disabled="grid.state.status === 'loading'" @click="actions.askReload">
+    <button type="button" class="icon-btn" :title="t('toolbar.reload')" :aria-label="t('toolbar.reloadLabel')" :disabled="grid.state.status === 'loading' || view.exporting.value" @click="actions.askReload">
       <AppIcon name="reload" />
     </button>
     <button

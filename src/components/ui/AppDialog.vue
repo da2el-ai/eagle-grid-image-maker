@@ -85,6 +85,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
 .body {
   color: var(--text-muted);
   line-height: 1.6;
+  white-space: pre-line;
 }
 .list {
   display: flex;

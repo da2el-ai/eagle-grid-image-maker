@@ -4,9 +4,9 @@
 import type { OutputFormat } from './settings';
 
 // 形式ごとの幅・高さの上限（px）。null は上限なし
-// WebP は検証で確かめた値（03 の 10 章）。JPEG は規格の上限で、段階 5 で確かめる
+// WebP は検証で確かめた値（03 の 10 章）。JPEG は libjpeg の上限（段階 5 で確かめた。65,501 px で失敗する）
 export const FORMAT_MAX_SIDE: Record<OutputFormat, number | null> = {
-  jpeg: 65535,
+  jpeg: 65500,
   webp: 16383,
   png: null,
 };

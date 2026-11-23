@@ -2,6 +2,7 @@
 import { inject, type InjectionKey, type Ref } from 'vue';
 import type { Settings } from './core/settings';
 import type { Actions } from './state/actions';
+import type { ExportStore } from './state/export-store';
 import type { GridStore } from './state/grid-store';
 import type { UiStore } from './state/ui-store';
 import type { View } from './state/view';
@@ -12,6 +13,7 @@ export interface AppContext {
   ui: UiStore;
   view: View;
   actions: Actions;
+  exp: ExportStore;
   fonts: Ref<string[] | null | 'loading'>; // OS のフォント（取れなければ null）
 }
 

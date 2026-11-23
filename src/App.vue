@@ -3,6 +3,7 @@
 import { onMounted, provide, ref } from 'vue';
 import { APP_KEY, type AppContext } from './app-context';
 import CategoryRail from './components/CategoryRail.vue';
+import ExportProgress from './components/ExportProgress.vue';
 import FooterBar from './components/FooterBar.vue';
 import PreviewPane from './components/PreviewPane.vue';
 import PreviewToolbar from './components/PreviewToolbar.vue';
@@ -36,6 +37,7 @@ if (import.meta.env.MODE === 'development') {
         <PreviewPane ref="preview" />
       </section>
     </div>
+    <ExportProgress />
     <FooterBar />
     <AppDialog v-if="ui.state.dialog" :key="ui.state.dialog.title" :dialog="ui.state.dialog" @choose="ui.choose" />
   </div>

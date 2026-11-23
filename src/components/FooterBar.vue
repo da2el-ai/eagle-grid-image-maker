@@ -30,7 +30,7 @@ const pageLabel = computed(() => (hasItems.value ? t('footer.page', { n: ui.stat
       <span class="muted">{{ t(`sort.${settings.sortKey}`) }}</span>
     </div>
     <div class="actions">
-      <button type="button" class="btn danger" :disabled="!hasItems" @click="actions.askClear">{{ t('footer.clear') }}</button>
+      <button type="button" class="btn danger" :disabled="!hasItems || view.exporting.value" @click="actions.askClear">{{ t('footer.clear') }}</button>
       <button type="button" class="btn" @click="actions.cancel">{{ t('footer.cancel') }}</button>
       <button type="button" class="btn primary" :disabled="!view.saveEnabled.value" @click="actions.save">{{ t('footer.save') }}</button>
     </div>

@@ -184,7 +184,7 @@ function onPointerDown(e: PointerEvent): void {
     // 捕まえられなくても操作は続ける
   }
   // Ctrl / Cmd + ドラッグは挿入移動（削除モードのときはしない）
-  if ((e.ctrlKey || e.metaKey) && index >= 0 && !ui.state.trash) {
+  if ((e.ctrlKey || e.metaKey) && index >= 0 && !ui.state.trash && !view.exporting.value) {
     const it = state.items[index];
     drag.value = { kind: 'reorder', id: e.pointerId, from: index, url: it.thumbnailURL, cx: x, cy: y, target: null };
     ui.state.reordering = true;
