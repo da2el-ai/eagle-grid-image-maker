@@ -135,26 +135,36 @@ npm run build:release
 
 ## 現在の状況
 
-- 本番のプラグインはまだ実装していない
-- macOS と Windows（x64）での技術検証（TV-01〜TV-15）は終わった。結果は [03_技術検証事項.md](.claude/specs/03_技術検証事項.md) の 10 章（macOS）と 11 章（Windows）にある。ARM 版の Windows は対応しないので検証しない
-- 最大の 8,192 件・32 ページでも、読み込み・ページ送り・並べ替えに問題がないことを Mac で確かめた（2026-11-23。03 の 10.2）
-- 検証で分かった主なこと
-  - Eagle は 4.0（Electron 22・Node 16）。画像処理は sharp 0.32.6 が動く（0.33 以降は Node 18 以上が必要で使えない）
-  - `getSelected()` の順番は、ユーザーが選んだ順番と一致する
-  - サムネイルは短辺 320px。長辺 960px 以下の画像はサムネイルを作らず、元画像を指す
-  - WebP は幅・高さとも 16383 px、JPEG は 65500 px が上限
-  - 書き出しの文字は、Canvas で描いて合成する（sharp の Pango とは文字幅が合わない。Windows では日本語でも 10〜16% 違う）
-- Windows で分かった主なこと（詳しくは 03 の 11.3）
+- 2026-11-23 に v1.0.0 を公開した（GitHub の Releases に、Mac 用と Windows 用の `.eagleplugin`）。Releases からダウンロードしたものが、インストールから書き出しまで動くことを確かめた
+- 実装は [04_実装計画.md](.claude/specs/04_実装計画.md) の段階 0〜6 で進めた。段階ごとの結果と決めたことは 04 の 3〜4 章にある
+- 技術検証（TV-01〜TV-15）の結果は [03_技術検証事項.md](.claude/specs/03_技術検証事項.md) の 10 章（macOS）と 11 章（Windows）にある
+- 技術スタック（01 の 11.1）
+  - Vue 3 ＋ TypeScript ＋ Vite。sharp 0.32.6 はバンドルせず、実行時に読み込む
+  - 対応は macOS（arm64）と Windows（x64）だけ。Intel の Mac と ARM 版の Windows は対応しない
+  - 配布用の `.eagleplugin` は、タグを push すると GitHub Actions が Mac と Windows のマシンでそれぞれ作る（「配布する」の節）
+- 画面は日本語と英語。言語は Eagle の言語設定（`eagle.app.locale`）から決める。文言は `public/locales/` の言語ごとの JSON に書き、コードに直接書かない（あとから言語を足せるようにする）
+
+### 分かっていること（実装で気をつける）
+
+- Eagle は 4.0（Electron 22・Chromium 108・Node 16）。sharp は 0.32.6 が動く（0.33 以降は Node 18 以上が必要で使えない）
+- Eagle の API は `eagle.onPluginCreate` が呼ばれてからでないと使えない（言語も `getSelected()` も）。起動の処理は、それを待ってから始める
+  - 開発用のビルドは、先にリモート受付を起動する分だけ遅れるので、待たなくてもたまたま動いてしまう。配布用で確かめる
+- `getSelected()` の順番は、ユーザーが選んだ順番と一致する
+- サムネイルは短辺 320px。長辺 960px 以下の画像はサムネイルを作らず、元画像を指す
+- WebP は幅・高さとも 16383 px、JPEG は 65500 px が上限
+- 書き出しの文字は、Canvas で描いて合成する（sharp の Pango とは文字幅が合わない。Windows では日本語でも 10〜16% 違う）
+- プレビューの Canvas には `font-feature-settings: normal` を付ける（画面全体の `palt` が効くと、書き出しと文字の幅が合わない）
+- 最大の 8,192 件・32 ページでも、読み込み・ページ送り・並べ替えに問題がない（03 の 10.2）
+- Windows（詳しくは 03 の 11.3）
   - プラグインの URL は `eagleplugin://…//D:/…` の形。パスを求めるときは、ドライブ名の前の `/` をすべて取る
   - sharp の書き込みエラーのメッセージは文字化けする。`fs` で書いてエラーの種類（`EPERM` など）で判断する
   - `wmic` がないので、空きディスク容量は PowerShell で取る
   - sharp が確保したメモリは、Windows では OS に返される（macOS では返されない）
-- 検証で出てきた仕様の論点（03 の 10.4）と 01 の [未決定] は、2026-11-23 に決めて 01（v0.3）に反映した
-- 技術スタックも決まった（01 の 11.1）。次は本番のプラグインの実装に入る
-  - Vue 3 ＋ TypeScript ＋ Vite。sharp 0.32.6 はバンドルせず、実行時に読み込む
-  - 対応は macOS（arm64）と Windows（x64）だけ。OS ごとに `.eagleplugin` を作り、GitHub の Releases で配る
-  - 配布用の `.eagleplugin` は、タグを push すると GitHub Actions が作る（Mac と Windows のマシンでそれぞれビルドする）
-- 実装計画は [04_実装計画.md](.claude/specs/04_実装計画.md)。段階ごとにユーザーの確認を取ってから次へ進む
-- 画面は日本語と英語。言語は Eagle の言語設定（`eagle.app.locale`）から決める。文言は `locales/` の言語ごとの JSON に書き、コードに直接書かない（あとから言語を足せるようにする）
+  - プラグインを開いている間は sharp の DLL が使用中になり、`dist/node_modules` を消せない
+- `.eagleplugin` は `release/` を ZIP にしたもの（名前が `.` で始まるファイルは入れない）。`npm run pack:release` で同じものが作れる
+
+### 作業のルール
+
+- 段階ごと・変更ごとに、ユーザーの確認を取ってから次へ進む
 - Eagle を操作・テストするのは、ライブラリの名前が `test-library` のときだけ。操作の前に毎回確かめる
-- `tech-verify/` は検証専用のプラグイン。コミットせず、使い終わったら削除する
+- `tech-verify/` は検証専用のプラグイン。コミットしない（gitignore）。残しておく
