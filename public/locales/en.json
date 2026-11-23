@@ -1,0 +1,7 @@
+{
+  "app.title": "Eagle Grid Image Maker",
+  "boot.loading": "Loading…",
+  "boot.sharpOk": "sharp {version} loaded ({ms} ms)",
+  "boot.sharpError": "Could not load sharp: {message}",
+  "boot.locale": "Language: {locale} (Eagle: {eagleLocale})"
+}

@@ -1,0 +1,25 @@
+/* 全体の色と文字（暗い配色。モックアップに合わせて段階 3 で整える） */
+:root {
+  --bg: #1f2126;
+  --bg-panel: #26282e;
+  --border: #383b42;
+  --text: #e6e7ea;
+  --text-muted: #9a9ea8;
+  --accent: #3b82f6;
+  --danger: #f87171;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 13px;
+}

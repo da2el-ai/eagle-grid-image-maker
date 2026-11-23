@@ -1,0 +1,18 @@
+{
+  "id": "eagle-grid-image-maker",
+  "version": "0.1.0",
+  "platform": "all",
+  "arch": "all",
+  "name": "Eagle Grid Image Maker",
+  "logo": "/logo.png",
+  "keywords": ["grid", "contact sheet", "xy plot"],
+  "devTools": false,
+  "main": {
+    "url": "index.html",
+    "width": 1280,
+    "height": 860,
+    "minWidth": 900,
+    "minHeight": 600,
+    "backgroundColor": "#1f2126"
+  }
+}

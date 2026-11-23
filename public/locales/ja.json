@@ -1,0 +1,7 @@
+{
+  "app.title": "Eagle Grid Image Maker",
+  "boot.loading": "読み込み中…",
+  "boot.sharpOk": "sharp {version} を読み込みました（{ms} ms）",
+  "boot.sharpError": "sharp を読み込めませんでした：{message}",
+  "boot.locale": "言語：{locale}（Eagle：{eagleLocale}）"
+}

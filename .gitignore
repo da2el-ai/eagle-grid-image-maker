@@ -21,3 +21,6 @@ npm-debug.log*
 .DS_Store
 Thumbs.db
 .idea/
+
+# sharp の実行時用の置き場・開発用のリモート受付
+.cache/
