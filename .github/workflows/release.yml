@@ -1,0 +1,74 @@
+# v1.0.0 のようなタグを push したら、Mac 用と Windows 用の .eagleplugin を作って Releases に載せる
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          # macOS（Apple Silicon）
+          - os: macos-14
+          # Windows（x64）
+          - os: windows-latest
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # ビルドには Node 18 以上が要る（Eagle の中では Eagle の Node で動く）
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # タグの版と package.json の版が同じか確かめる
+      - name: 版を確かめる
+        shell: bash
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          pkg="$(node -p "require('./package.json').version")"
+          if [ "$tag" != "$pkg" ]; then
+            echo "タグ（$tag）と package.json の版（$pkg）が違います"
+            exit 1
+          fi
+
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build:release
+      - run: npm run pack:release
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: plugin-${{ matrix.os }}
+          path: .cache/pack/*.eagleplugin
+          if-no-files-found: error
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      # リリースを作って .eagleplugin を載せる。すでにあれば、ファイルだけ差し替える
+      - name: Releases に載せる
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          ls -l dist
+          if gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" dist/*.eagleplugin --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" dist/*.eagleplugin --title "$GITHUB_REF_NAME" --generate-notes
+          fi

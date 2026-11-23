@@ -107,9 +107,17 @@ npm run build:release
 
 1. `release/` フォルダができます
 2. Eagle の「プラグイン」→「開発者オプション」→「ローカルプロジェクトをインポート」で、`release/` を読み込みます
-3. プラグインの一覧でこのプラグインを右クリックし、「Pack Plugin」を選ぶと `.eagleplugin` ができます
+3. `npm run pack:release` を実行すると、`.cache/pack/` に `.eagleplugin` ができます（名前は `eagle-grid-image-maker-<版>-<mac-arm|win-x64>.eagleplugin`）
+   - Eagle の「Pack Plugin」と同じ中身です（`release/` を ZIP にしたもの。名前が `.` で始まるファイルは入れない）
 
 画像処理に使う [sharp](https://sharp.pixelplumbing.com/) は、ビルドした OS 用のものが入ります。Windows 用は Windows でビルドしてください。
+
+### 配布する
+
+1. `package.json` の `version` を上げてコミットする
+2. 同じ版のタグ（例：`v1.0.1`）を付けて push する
+3. GitHub Actions（`.github/workflows/release.yml`）が、Mac（arm64）と Windows（x64）でビルドし、2つの `.eagleplugin` を Releases に載せる
+   - タグの形は `v数字.数字.数字`。タグと `package.json` の版が違うと止まる
 
 ### 開発
 
@@ -119,6 +127,7 @@ npm run build:release
 | `npm run build:dev` | 開発用のビルドを `dist/` に作る |
 | `npm test` | 単体テスト（Vitest） |
 | `npm run typecheck` | 型チェック |
+| `npm run pack:release` | `release/` から `.eagleplugin` を作る |
 
 - 開発用のビルドは、ID が `eagle-grid-image-maker-dev`、名前が「Eagle Grid Image Maker (dev)」になります。配布用と同時に Eagle に入れられます
 - 開発者ツールは F12 で開けます
@@ -143,8 +152,8 @@ npm run build:release
 - 検証で出てきた仕様の論点（03 の 10.4）と 01 の [未決定] は、2026-11-23 に決めて 01（v0.3）に反映した
 - 技術スタックも決まった（01 の 11.1）。次は本番のプラグインの実装に入る
   - Vue 3 ＋ TypeScript ＋ Vite。sharp 0.32.6 はバンドルせず、実行時に読み込む
-  - 対応は macOS（arm64）と Windows（x64）だけ。OS ごとに `.eagleplugin` を Eagle の「Pack Plugin」で作り、GitHub の Releases で配る
-  - Windows 用は Windows の PC でビルドする
+  - 対応は macOS（arm64）と Windows（x64）だけ。OS ごとに `.eagleplugin` を作り、GitHub の Releases で配る
+  - 配布用の `.eagleplugin` は、タグを push すると GitHub Actions が作る（Mac と Windows のマシンでそれぞれビルドする）
 - 実装計画は [04_実装計画.md](.claude/specs/04_実装計画.md)。段階ごとにユーザーの確認を取ってから次へ進む
 - 画面は日本語と英語。言語は Eagle の言語設定（`eagle.app.locale`）から決める。文言は `locales/` の言語ごとの JSON に書き、コードに直接書かない（あとから言語を足せるようにする）
 - Eagle を操作・テストするのは、ライブラリの名前が `test-library` のときだけ。操作の前に毎回確かめる
