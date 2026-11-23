@@ -14,16 +14,16 @@ jobs:
     strategy:
       matrix:
         include:
-          # macOS（Apple Silicon）
-          - os: macos-14
+          # macOS（Apple Silicon）。macos-14 は使えなくなった
+          - os: macos-15
           # Windows（x64）
           - os: windows-latest
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # ビルドには Node 18 以上が要る（Eagle の中では Eagle の Node で動く）
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -43,19 +43,20 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build:release
-      - run: npm run pack:release
+      # 出力先は . で始まらないフォルダにする（upload-artifact は . で始まるものを除くため）
+      - run: npm run pack:release -- packed
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: plugin-${{ matrix.os }}
-          path: .cache/pack/*.eagleplugin
+          path: packed/*.eagleplugin
           if-no-files-found: error
 
   release:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           path: dist
           merge-multiple: true
